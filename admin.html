@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MOMO 後台管理系統</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #000; --accent: #2148d5; --bg: #f4f4f4; }
+        * { box-sizing: border-box; font-family: 'Noto Sans TC', sans-serif; }
+        body { background: var(--bg); color: var(--primary); padding: 2rem; }
+        
+        .container { max-width: 900px; margin: 0 auto; background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        h1 { text-align: center; margin-bottom: 2rem; color: rgb(2, 80, 119); }
+        
+        .form-group { margin-bottom: 1rem; }
+        label { display: block; margin-bottom: 0.5rem; font-weight: bold; }
+        input[type="text"], input[type="number"], textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 1rem; }
+        
+        .checkbox-group { display: flex; flex-wrap: wrap; gap: 15px; padding: 10px; border: 1px solid #eee; border-radius: 5px; }
+        .checkbox-label { display: flex; align-items: center; font-weight: normal; cursor: pointer; }
+        .checkbox-label input { margin-right: 8px; width: 18px; height: 18px; }
+
+        /* 雙層規格樣式 */
+        .variant-box { border: 1px solid #ddd; padding: 15px; border-radius: 5px; background: #fdfdfd; margin-top: 10px; }
+        .variant-header { display: flex; gap: 10px; margin-bottom: 5px; font-size: 0.9rem; color: #666; font-weight: bold; }
+        .variant-row { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; }
+        .v-input-lg { flex: 2; }
+        .v-input-sm { flex: 1; }
+        .btn-add-variant { background: #27ae60; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.9rem; }
+        .btn-remove-variant { background: #e74c3c; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
+
+        .btn-submit { background: rgb(2, 80, 119); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 1rem; width: 100%; }
+        .btn-submit:hover { background: var(--accent); }
+        .btn-cancel { background: #7f8c8d; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; width: 100%; margin-top: 10px; display: none; }
+        .editing .btn-submit { background: #e67e22; } .editing .btn-submit::after { content: " (確認修改)"; }
+
+        .product-list { margin-top: 3rem; }
+        .product-item { display: flex; align-items: center; border-bottom: 1px solid #eee; padding: 1rem 0; gap: 1rem; }
+        .product-img-thumb { width: 60px; height: 60px; object-fit: cover; border-radius: 5px; }
+        .product-info { flex-grow: 1; }
+        .action-btns { display: flex; gap: 10px; }
+        .btn-edit { background: #f39c12; color: white; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; }
+        .btn-delete { background: #e74c3c; color: white; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; }
+
+        #imagePositionEditor { display: none; margin-top: 1rem; background: #f9f9f9; padding: 1rem; border-radius: 8px; border: 1px solid #eee; }
+        #imagePositionEditor.active { display: block; }
+        .pos-group-title { font-weight: bold; color: #555; margin-bottom: 10px; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
+        .pos-edit-item { display: flex; align-items: center; gap: 1rem; margin-bottom: 10px; background: white; padding: 10px; border-radius: 5px; }
+        .pos-edit-img { width: 80px; height: 80px; object-fit: cover; border-radius: 5px; border: 2px solid #ddd; }
+        .pos-select { flex-grow: 1; padding: 8px; }
+
+        /* ✨ 圖片庫 Modal 樣式 ✨ */
+        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); }
+        .modal-content { background-color: white; margin: 10% auto; padding: 20px; border-radius: 10px; width: 80%; max-width: 800px; max-height: 70vh; overflow-y: auto; position: relative; }
+        .close-modal { position: absolute; top: 10px; right: 20px; font-size: 30px; cursor: pointer; color: #aaa; }
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; margin-top: 15px; }
+        .gallery-item { position: relative; cursor: pointer; border: 3px solid transparent; border-radius: 5px; overflow: hidden; aspect-ratio: 1/1; }
+        .gallery-item img { width: 100%; height: 100%; object-fit: cover; }
+        .gallery-item.selected { border-color: var(--accent); }
+        .gallery-item.selected::after { content: "✔"; position: absolute; top: 5px; right: 5px; background: var(--accent); color: white; border-radius: 50%; width: 20px; height: 20px; text-align: center; font-size: 14px; line-height: 20px; }
+        .btn-gallery { background: #3498db; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; margin-right: 10px; }
+        .btn-gallery-confirm { background: #27ae60; color: white; padding: 10px 20px; border: none; border-radius: 5px; margin-top: 15px; width: 100%; cursor: pointer; font-size: 1rem; }
+
+    </style>
+</head>
+<body>
+
+<div class="container" id="mainContainer">
+    <h1 id="formTitle">新增商品</h1>
+    
+    <form id="uploadForm">
+        <input type="hidden" id="editId">
+
+        <div class="form-group">
+            <label>商品名稱</label>
+            <input type="text" name="name" id="pName" required>
+        </div>
+        
+        <div class="form-group">
+            <label>基本價格 (顯示用)</label>
+            <input type="number" name="price" id="pPrice" required>
+        </div>
+
+        <div class="form-group">
+            <label>多規格選項 (可設定單層或雙層)</label>
+            <div class="variant-box">
+                <div class="variant-header">
+                    <span style="flex:2">規格一 (如:功能/顏色)</span>
+                    <span style="flex:2">規格二 (如:大小/容量) *選填</span>
+                    <span style="flex:1">價格</span>
+                    <span style="width:45px"></span>
+                </div>
+                <div id="variantList"></div>
+                <button type="button" class="btn-add-variant" onclick="addVariantRow()">+ 新增規格</button>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label>分類 (可複選)</label>
+            <div class="checkbox-group">
+                <label class="checkbox-label"><input type="checkbox" name="category" value="洗髮"> 洗髮</label>
+                <label class="checkbox-label"><input type="checkbox" name="category" value="染髮"> 染髮</label>
+                <label class="checkbox-label"><input type="checkbox" name="category" value="燙髮"> 燙髮</label>
+                <label class="checkbox-label"><input type="checkbox" name="category" value="保養"> 保養</label>
+                <label class="checkbox-label"><input type="checkbox" name="category" value="煥采"> 煥采</label>
+                <label class="checkbox-label"><input type="checkbox" name="category" value="活萃"> 活萃</label>
+                <label class="checkbox-label"><input type="checkbox" name="category" value="R.O.8"> R.O.8</label>
+                <label class="checkbox-label"><input type="checkbox" name="category" value="S.I.G"> S.I.G</label>
+                <label class="checkbox-label"><input type="checkbox" name="category" value="日本"> 日本</label>
+                <label class="checkbox-label"><input type="checkbox" name="category" value="韓國"> 韓國</label>
+                <label class="checkbox-label"><input type="checkbox" name="category" value="其他"> 其他</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>商品描述</label>
+            <textarea name="description" id="pDesc" rows="3"></textarea>
+        </div>
+        
+        <div class="form-group">
+            <label>商品圖片 (新上傳 或 從圖庫選擇)</label>
+            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                <button type="button" class="btn-gallery" onclick="openGallery()">從圖庫選擇</button>
+                <input type="file" name="photos" id="fileInput" multiple accept="image/*" onchange="previewFiles()" style="flex-grow: 1;">
+            </div>
+        </div>
+
+        <div id="imagePositionEditor">
+            <div id="positionTitle" class="pos-group-title">圖片預覽與位置設定</div>
+            <div id="positionList"></div>
+        </div>
+        
+        <button type="submit" id="submitBtn" class="btn-submit">立即上架</button>
+        <button type="button" id="cancelBtn" class="btn-cancel" onclick="resetForm()">取消編輯</button>
+    </form>
+
+    <hr style="margin: 3rem 0;">
+
+    <h2>已上架商品列表</h2>
+    <div id="productList" class="product-list"></div>
+</div>
+
+<div id="galleryModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeGallery()">&times;</span>
+        <h2>選擇現有圖片</h2>
+        <div id="galleryGrid" class="gallery-grid">載入中...</div>
+        <button class="btn-gallery-confirm" onclick="confirmGallerySelection()">確認選擇</button>
+    </div>
+</div>
+
+<script>
+    const API_URL = 'http://127.0.0.1:5001/api/products';
+    const GALLERY_API = 'http://127.0.0.1:5001/api/images';
+    let allProducts = [];
+    
+    // ✨ 暫存使用者選擇的舊圖片網址 ✨
+    let selectedGalleryImages = [];
+
+    const positionOptions = [
+        { value: 'center center', text: '置中 (預設)' },
+        { value: 'top center', text: '靠上' },
+        { value: 'bottom center', text: '靠下' },
+        { value: 'center left', text: '靠左' },
+        { value: 'center right', text: '靠右' },
+        { value: 'top left', text: '左上' },
+        { value: 'top right', text: '右上' },
+    ];
+
+    function addVariantRow(s1 = "", s2 = "", price = "") {
+        const div = document.createElement('div');
+        div.className = 'variant-row';
+        div.innerHTML = `
+            <input type="text" placeholder="例如: 保濕型" class="v-s1 v-input-lg" value="${s1}">
+            <input type="text" placeholder="例如: 300ml" class="v-s2 v-input-lg" value="${s2}">
+            <input type="number" placeholder="價格" class="v-price v-input-sm" value="${price}">
+            <button type="button" class="btn-remove-variant" onclick="this.parentElement.remove()">刪除</button>
+        `;
+        document.getElementById('variantList').appendChild(div);
+    }
+
+    async function loadProducts() {
+        try {
+            const res = await fetch(API_URL);
+            allProducts = await res.json();
+            const list = document.getElementById('productList');
+            list.innerHTML = ''; 
+
+            allProducts.forEach(p => {
+                let imgUrl = (p.images && p.images.length > 0) ? p.images[0] : 'https://placehold.co/100';
+                let catText = Array.isArray(p.category) ? p.category.join(', ') : p.category;
+                let variantHint = (p.variants && p.variants.length > 0) ? `<span style="color:blue; font-size:0.8rem;">(多規格)</span>` : '';
+
+                list.innerHTML += `
+                    <div class="product-item">
+                        <img src="${imgUrl}" class="product-img-thumb" onerror="this.src='https://placehold.co/100'">
+                        <div class="product-info">
+                            <strong>${p.name} ${variantHint}</strong> <br>
+                            <span style="color: #666; font-size: 0.9rem;">$${p.price} | ${catText}</span>
+                        </div>
+                        <div class="action-btns">
+                            <button class="btn-edit" onclick="startEdit(${p.id})">編輯</button>
+                            <button class="btn-delete" onclick="deleteProduct(${p.id})">刪除</button>
+                        </div>
+                    </div>
+                `;
+            });
+        } catch (e) { console.error("載入失敗", e); }
+    }
+
+    // ✨ 整合預覽功能：混合「新上傳檔案」與「已選舊圖片」 ✨
+    function previewFiles() {
+        const fileInput = document.getElementById('fileInput');
+        const posList = document.getElementById('positionList');
+        const editor = document.getElementById('imagePositionEditor');
+        const title = document.getElementById('positionTitle');
+        posList.innerHTML = '';
+
+        const hasFiles = fileInput.files && fileInput.files.length > 0;
+        const hasGallery = selectedGalleryImages.length > 0;
+
+        if (hasFiles || hasGallery) {
+            editor.classList.add('active');
+            title.innerText = "圖片預覽與位置設定 (新檔案 + 已選圖片)";
+            
+            let totalIndex = 0;
+
+            // 1. 先顯示剛剛在圖庫選的舊圖
+            selectedGalleryImages.forEach(imgUrl => {
+                let optionsHtml = '';
+                positionOptions.forEach(opt => optionsHtml += `<option value="${opt.value}">${opt.text}</option>`);
+                
+                posList.innerHTML += `
+                    <div class="pos-edit-item" style="border-left: 5px solid #3498db;">
+                        <img src="${imgUrl}" class="pos-edit-img">
+                        <div style="flex-grow:1">
+                            <label style="font-size:0.9rem; color:#3498db;">[已選舊圖] 圖片 ${totalIndex + 1}：</label>
+                            <select name="positions" class="pos-select">${optionsHtml}</select>
+                        </div>
+                    </div>
+                `;
+                totalIndex++;
+            });
+
+            // 2. 再顯示新上傳的檔案
+            if (hasFiles) {
+                Array.from(fileInput.files).forEach((file) => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        let optionsHtml = '';
+                        positionOptions.forEach(opt => optionsHtml += `<option value="${opt.value}">${opt.text}</option>`);
+                        posList.innerHTML += `
+                            <div class="pos-edit-item" style="border-left: 5px solid #27ae60;">
+                                <img src="${e.target.result}" class="pos-edit-img">
+                                <div style="flex-grow:1">
+                                    <label style="font-size:0.9rem; color:#27ae60;">[新上傳] 圖片 (${file.name})：</label>
+                                    <select name="positions" class="pos-select">${optionsHtml}</select>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    reader.readAsDataURL(file); 
+                });
+            }
+
+        } else {
+            const editId = document.getElementById('editId').value;
+            if (!editId) editor.classList.remove('active');
+        }
+    }
+
+    // ✨ 圖庫相關功能 ✨
+    async function openGallery() {
+        document.getElementById('galleryModal').style.display = 'block';
+        const grid = document.getElementById('galleryGrid');
+        grid.innerHTML = '載入中...';
+        
+        try {
+            const res = await fetch(GALLERY_API);
+            const images = await res.json();
+            grid.innerHTML = '';
+            
+            if(images.length === 0) {
+                grid.innerHTML = '<p>伺服器尚無圖片，請先上傳。</p>';
+                return;
+            }
+
+            images.forEach(imgUrl => {
+                const div = document.createElement('div');
+                div.className = 'gallery-item';
+                // 如果之前已經選過這張，加上 selected 樣式
+                if(selectedGalleryImages.includes(imgUrl)) div.classList.add('selected');
+                
+                div.innerHTML = `<img src="${imgUrl}">`;
+                div.onclick = () => {
+                    div.classList.toggle('selected');
+                };
+                grid.appendChild(div);
+            });
+
+        } catch (e) {
+            console.error(e);
+            grid.innerHTML = '<p style="color:red">無法載入圖片庫</p>';
+        }
+    }
+
+    function closeGallery() {
+        document.getElementById('galleryModal').style.display = 'none';
+    }
+
+    function confirmGallerySelection() {
+        // 收集所有被選中的圖片
+        const selectedItems = document.querySelectorAll('.gallery-item.selected img');
+        selectedGalleryImages = Array.from(selectedItems).map(img => img.src);
+        
+        closeGallery();
+        previewFiles(); // 更新預覽區
+    }
+
+    // 點擊 Modal 外圍關閉
+    window.onclick = function(event) {
+        const modal = document.getElementById('galleryModal');
+        if (event.target == modal) closeGallery();
+    }
+
+    // --- 編輯功能 ---
+    function startEdit(id) {
+        const product = allProducts.find(p => p.id === id);
+        if (!product) return;
+
+        document.getElementById('editId').value = product.id;
+        document.getElementById('pName').value = product.name;
+        document.getElementById('pPrice').value = product.price;
+        document.getElementById('pDesc').value = product.description;
+
+        // ✨ 修正分類勾選邏輯 ✨
+        // 先全部取消勾選
+        document.querySelectorAll('input[name="category"]').forEach(cb => cb.checked = false);
+        
+        // 確保 product.category 是一個陣列 (後端現在會統一回傳陣列了)
+        let cats = product.category;
+        if (!Array.isArray(cats)) cats = [cats]; // 防呆：如果是舊字串，轉成陣列
+
+        // 依序勾選
+        cats.forEach(cat => {
+            const cb = document.querySelector(`input[name="category"][value="${cat}"]`);
+            if (cb) cb.checked = true;
+        });
+
+        // ... (以下是規格和圖片的舊有程式碼，保持不變) ...
+        document.getElementById('variantList').innerHTML = '';
+        if (product.variants && product.variants.length > 0) {
+            product.variants.forEach(v => {
+                if (v.s1) addVariantRow(v.s1, v.s2 || "", v.price);
+                else if (v.name) addVariantRow(v.name, "", v.price);
+            });
+        }
+
+        document.getElementById('formTitle').innerText = "編輯商品";
+        document.getElementById('submitBtn').innerText = "確認修改";
+        document.getElementById('cancelBtn').style.display = "block";
+        document.getElementById('mainContainer').classList.add('editing');
+
+        // ... (圖片預覽邏輯保持不變) ...
+        selectedGalleryImages = product.images || [];
+        document.getElementById('fileInput').value = ""; 
+        
+        const posList = document.getElementById('positionList');
+        const editor = document.getElementById('imagePositionEditor');
+        posList.innerHTML = '';
+        editor.classList.add('active');
+        document.getElementById('positionTitle').innerText = "現有圖片 (可新增/刪除)";
+
+        if (selectedGalleryImages.length > 0) {
+            selectedGalleryImages.forEach((imgUrl, index) => {
+                const currentPos = (product.image_positions && product.image_positions[index]) || 'center center';
+                let optionsHtml = '';
+                positionOptions.forEach(opt => {
+                    const selected = (opt.value === currentPos) ? 'selected' : '';
+                    optionsHtml += `<option value="${opt.value}" ${selected}>${opt.text}</option>`;
+                });
+                posList.innerHTML += `
+                    <div class="pos-edit-item" style="border-left: 5px solid #f39c12;">
+                        <img src="${imgUrl}" class="pos-edit-img">
+                        <div style="flex-grow:1">
+                            <label style="font-size:0.9rem">[原圖片] 圖片 ${index + 1}：</label>
+                            <select name="positions" class="pos-select">${optionsHtml}</select>
+                        </div>
+                    </div>
+                `;
+            });
+        } else { posList.innerHTML = '<p style="padding:10px">無圖片</p>'; }
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    function resetForm() {
+        document.getElementById('uploadForm').reset();
+        document.getElementById('editId').value = "";
+        document.getElementById('variantList').innerHTML = "";
+        document.getElementById('positionList').innerHTML = "";
+        document.getElementById('imagePositionEditor').classList.remove('active');
+        document.getElementById('formTitle').innerText = "新增商品";
+        document.getElementById('submitBtn').innerText = "立即上架";
+        document.getElementById('cancelBtn').style.display = "none";
+        document.getElementById('mainContainer').classList.remove('editing');
+        selectedGalleryImages = []; // 清空已選舊圖
+    }
+
+    document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('submitBtn');
+        btn.disabled = true;
+        const editId = document.getElementById('editId').value;
+        const formData = new FormData(e.target);
+        const url = editId ? `${API_URL}/${editId}` : API_URL;
+        const method = editId ? 'PUT' : 'POST';
+
+        // 雙層規格
+        const variants = [];
+        document.querySelectorAll('.variant-row').forEach(row => {
+            const vS1 = row.querySelector('.v-s1').value.trim();
+            const vS2 = row.querySelector('.v-s2').value.trim();
+            const vPrice = row.querySelector('.v-price').value.trim();
+            if (vS1 && vPrice) {
+                variants.push({ s1: vS1, s2: vS2, price: parseInt(vPrice) });
+            }
+        });
+        formData.append('variants', JSON.stringify(variants));
+
+        // ✨ 關鍵：將使用者在圖庫選的圖片網址，append 到 formData ✨
+        selectedGalleryImages.forEach(imgUrl => {
+            formData.append('existing_images', imgUrl);
+        });
+
+        try {
+            const res = await fetch(url, { method: method, body: formData });
+            if (res.ok) {
+                alert(editId ? '商品修改成功！' : '商品上架成功！');
+                resetForm(); loadProducts();
+            } else { alert('操作失敗'); }
+        } catch (err) { console.error(err); alert('無法連線到伺服器'); }
+        btn.disabled = false;
+    });
+
+    async function deleteProduct(id) {
+        if (!confirm('確定要刪除這個商品嗎？')) return;
+        try { await fetch(`${API_URL}/${id}`, { method: 'DELETE' }); loadProducts(); } 
+        catch (err) { alert('刪除失敗'); }
+    }
+
+    loadProducts();
+</script>
+</body>
+</html>

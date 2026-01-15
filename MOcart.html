@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>購物車 - MOMO HAIRSTYLE</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #5e4b4b;       
+            --bg: #ffffff;             
+            --accent: #2148d5;         
+            --accent-dark: #0000a9;    
+            --card-bg: #ffffff;
+            --header-bg: #0250c7; 
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Noto Sans TC', sans-serif; }
+        body { background: var(--bg); color: var(--primary); padding-bottom: 50px; }
+
+        header {
+            background: var(--header-bg); 
+            color: #fff;
+            padding: 0 1.5rem; 
+            height: 80px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        header a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.5rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 2rem auto;
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+        }
+
+        h2 { text-align: center; margin-bottom: 1.5rem; font-weight: bold; }
+
+        table { width: 100%; border-collapse: collapse; }
+        th { padding: 1rem; text-align: left; background: #f2e9e6; color: #5e4b4b; }
+        td { padding: 1rem; border-bottom: 1px solid #eee; }
+
+        .product-img {
+            width: 80px; height: 80px; object-fit: cover;
+            border-radius: 10px; border: 1px solid #e0d6d3;
+        }
+
+        .qty-control { display: flex; align-items: center; gap: 10px; }
+        .qty-control button {
+            width: 32px; height: 32px; border-radius: 8px; border: none;
+            font-size: 20px; background: var(--accent); color: white;
+            cursor: pointer; transition: 0.2s;
+        }
+        .qty-control button:hover { background: var(--accent-dark); }
+        .qty-control input {
+            width: 45px; text-align: center; padding: 5px;
+            border-radius: 8px; border: 1px solid #ccc;
+        }
+
+        .total-area { text-align: right; margin-top: 2rem; font-size: 1.2rem; font-weight: bold; }
+
+        /* 輸入框樣式 */
+        .input-group {
+            margin-top: 2rem;
+            background: #f9f9f9;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 1px solid #eee;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+
+        .checkout-btn {
+            display: block; width: 100%; background: var(--accent-dark);
+            color: white; padding: 1rem; border: none; font-size: 1.1rem;
+            text-align: center; border-radius: 12px; margin-top: 1.5rem;
+            cursor: pointer; transition: 0.25s;
+        }
+        .checkout-btn:hover { background: #996d5e; }
+        .checkout-btn:disabled { background: #ccc; cursor: not-allowed; }
+
+        @media (max-width: 600px) {
+            td { display: block; text-align: center; }
+            th { display: none; }
+            .product-img { margin-bottom: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1><a href="MOindex.html">MOMO HAIRSTYLE</a></h1>
+    <nav><a href="MOindex.html">← 回首頁</a></nav>
+</header>
+
+<div class="container">
+    <h2>購物車</h2>
+
+    <table id="cartTable">
+        <thead>
+            <tr>
+                <th>商品圖片</th>
+                <th>商品名稱</th>
+                <th>單價</th>
+                <th>數量</th>
+                <th>小計</th>
+            </tr>
+        </thead>
+        <tbody id="cartBody"></tbody>
+    </table>
+
+    <div class="total-area">
+        總金額：NT$ <span id="totalAmount">0</span>
+    </div>
+
+    <div class="input-group">
+        <label for="customerName">您的稱呼 (必填)</label>
+        <input type="text" id="customerName" placeholder="請輸入您的姓名，方便我們確認訂單">
+    </div>
+
+    <button class="checkout-btn" onclick="checkout()">送出訂單</button>
+</div>
+
+<script>
+    function loadCart() {
+        let cart = JSON.parse(localStorage.getItem("momoCart")) || [];
+        let cartBody = document.getElementById("cartBody");
+        let totalAmount = 0;
+        cartBody.innerHTML = "";
+
+        cart.forEach((item, index) => {
+            let subtotal = item.price * item.quantity;
+            totalAmount += subtotal;
+
+            let displayImg = item.image;
+            if (!displayImg.startsWith('http')) {
+                displayImg = `http://127.0.0.1:5001/uploads/${item.image}`; 
+            }
+
+            cartBody.innerHTML += `
+                <tr>
+                    <td><img src="${displayImg}" class="product-img" onerror="this.src='https://placehold.co/100?text=No+Image'"></td>
+                    <td>${item.name}</td>
+                    <td>NT$ ${item.price.toLocaleString()}</td>
+                    <td>
+                        <div class="qty-control">
+                            <button onclick="updateQty(${index}, -1)">−</button>
+                            <input type="text" value="${item.quantity}" readonly>
+                            <button onclick="updateQty(${index}, 1)">+</button>
+                        </div>
+                    </td>
+                    <td>NT$ ${subtotal.toLocaleString()}</td>
+                </tr>
+            `;
+        });
+
+        if (cart.length === 0) {
+            cartBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 2rem;">您的購物車是空的</td></tr>';
+        }
+        document.getElementById("totalAmount").textContent = totalAmount.toLocaleString();
+    }
+
+    function updateQty(index, change) {
+        let cart = JSON.parse(localStorage.getItem("momoCart")) || [];
+        cart[index].quantity += change;
+        if (cart[index].quantity < 1) cart.splice(index, 1);
+        localStorage.setItem("momoCart", JSON.stringify(cart));
+        loadCart();
+    }
+
+    // ✨ 更新：結帳時連同名字一起傳送
+    async function checkout() {
+        let cart = JSON.parse(localStorage.getItem("momoCart")) || [];
+        if (cart.length === 0) {
+            alert("購物車是空的，無法結帳！");
+            return;
+        }
+
+        // 1. 取得並檢查姓名
+        const nameInput = document.getElementById('customerName');
+        const customerName = nameInput.value.trim();
+
+        if (customerName === "") {
+            alert("請輸入您的稱呼！");
+            nameInput.focus(); // 把游標移過去
+            return;
+        }
+
+        const btn = document.querySelector('.checkout-btn');
+        const originalText = btn.innerText;
+        btn.innerText = "處理中...";
+        btn.disabled = true;
+
+        try {
+            // 2. 準備傳送的資料 (包含名字和購物車)
+            const payload = {
+                customerName: customerName,
+                cart: cart
+            };
+
+            const response = await fetch('http://127.0.0.1:5001/api/checkout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+                alert("已將商品上傳至資料庫");
+                localStorage.removeItem("momoCart");
+                loadCart();
+                nameInput.value = ""; // 清空輸入框
+            } else {
+                alert("結帳失敗，請確認後端是否開啟。");
+            }
+        } catch (error) {
+            console.error("結帳錯誤:", error);
+            alert("無法連線到伺服器 (Port 5001)。");
+        }
+
+        btn.innerText = originalText;
+        btn.disabled = false;
+    }
+
+    loadCart();
+</script>
+
+</body>
+</html>

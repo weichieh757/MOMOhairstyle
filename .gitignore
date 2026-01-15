@@ -1,0 +1,19 @@
+
+# System
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.env
+
+# Database and Data
+*.db
+*.sqlite3
+inventory.xlsx
+
+# Uploads
+uploads/
+上傳/

@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>髦髦 MOMO HAIRSTYLE | 台南專業髮廊與頂級護髮產品</title>
+    <meta name="description" content="台南安平區推薦髮廊 MOMO HAIRSTYLE。提供專業剪髮、染髮、燙髮服務，並販售 R.O.8、日本AQUA碳酸泉等頂級沙龍專用洗髮精與護髮產品。">
+    <meta name="keywords" content="碳酸洗髮, 碳酸泉, 碳酸, 日本碳酸, 台南髮廊, 染髮, 台南染髮, 安平剪髮, 頭皮護理, 頭皮養護, 頭皮調理, 護髮產品, 洗髮精推薦, MOMO HAIRSTYLE, R.O.8, 染髮推薦">
+    <meta name="author" content="MOMO HAIRSTYLE">
+
+    <meta property="og:title" content="髦髦 MOMO HAIRSTYLE | 打造專屬您的獨特風格">
+    <meta property="og:description" content="嚴選頂級沙龍專用產品，讓居家護理也能擁有沙龍級質感。聖誕限定優惠組合熱賣中！">
+    <meta property="og:image" content="http://127.0.0.1:5001/uploads/shop.db.jpeg">
+    <meta property="og:type" content="website">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root { --primary: #000; --accent: #0250c7; --bg: #f4f4f4; --header-bg:#0250c7; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans TC', sans-serif; }
+        
+        /* ========================================== */
+        /* ✨ [捲動捕捉] Scroll Snap 智慧切換 ✨ */
+        /* ========================================== */
+        html {
+            scroll-behavior: smooth; /* 讓所有滾動都有平滑動畫 */
+        }
+        
+        /* 只有當加上這個 class 時 (在首頁模式)，才會啟動「強制分頁」功能 */
+        html.snap-active {
+            scroll-snap-type: y mandatory;
+        }
+
+        body { 
+            background: var(--bg); 
+            color: var(--primary); 
+            padding-bottom: 0;
+            overflow-x: hidden; 
+        }
+        
+        a { text-decoration: none; color: inherit; }
+        
+        /* Header 設定 (半透明磨砂玻璃效果) */
+        header { 
+            background: #0250c7; 
+            color: white; 
+            padding: 0 2rem; 
+            height: 80px; 
+            display: flex; 
+            justify-content: flex-end; 
+            align-items: center; 
+            position: sticky; 
+            top: 0; 
+            z-index: 1000; 
+            backdrop-filter: blur(5px); 
+        }
+        header h1 { 
+            position: absolute; left: 50%; transform: translateX(-50%); 
+            margin: 0; font-size: 1.5rem; white-space: nowrap; font-weight: bold; 
+        }
+        nav ul { list-style: none; display: flex; gap: 20px; }
+        nav a { color: white; font-weight: bold; transition: color 0.3s; }
+        nav a:hover { color: #ccc; }
+
+        /* Dropdown 下拉選單 */
+        .dropdown { position: relative; display: flex; align-items: center; height: 100%; }
+        .dropdown-content { display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); background: white; min-width: 160px; box-shadow: 0 8px 16px rgba(0,0,0,0.2); border-radius: 0 0 4px 4px; overflow: hidden; z-index: 1001; }
+        .dropdown:hover .dropdown-content { display: block; }
+        .dropdown-content a { color: #333; padding: 12px 16px; text-align: center; display: block; }
+        .dropdown-content a:hover { background: #f1f1f1; color: var(--accent); }
+
+        /* ========================================== */
+        /* ✨ [視差滾動] 每一頁的區塊設定 ✨ */
+        /* ========================================== */
+        .story-section {
+            position: relative;
+            width: 100%;
+            height: 100vh; /* 佔滿整個螢幕高度 */
+            
+            /* 背景固定不動，創造視差效果 */
+            background-attachment: fixed; 
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover; /* 確保背景圖填滿 */
+            
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+
+            /* [捲動捕捉] 設定這一塊為一個「捕捉點」 */
+            scroll-snap-align: start;  
+            scroll-snap-stop: always;  /* 強制停在這裡，不能一次滑過 */
+        }
+
+        /* [影片背景] 專用設定 */
+        .video-section {
+            position: relative;
+            overflow: hidden; /* 防止影片超出範圍 */
+            /* 背景圖已在 inline-style 設定，這裡確保它能正確填滿 */
+        }
+
+        /* [影片] 絕對定位，確保永遠填滿區塊且不變形 */
+        .bg-video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            transform: translate(-50%, -50%); /* 確保置中 */
+            object-fit: cover; /* 關鍵：讓影片填滿畫面 */
+            z-index: 0; /* 放在最底層 (背景圖之上) */
+        }
+
+        /* 遮罩層 (讓文字在複雜背景上看得清楚) */
+        .overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 1; /* 比影片高一層 */
+        }
+
+        /* 文字內容區 (初始隱藏，透過 JS 觸發浮現動畫) */
+        .story-content {
+            position: relative;
+            z-index: 2; /* 最上層 */
+            color: white;
+            max-width: 800px;
+            padding: 2rem;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 1s ease-out;
+        }
+
+        /* 加上 .visible 後文字會浮現 */
+        .story-content.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .story-title { font-size: 3rem; font-weight: 700; margin-bottom: 1rem; text-shadow: 0 2px 10px rgba(0,0,0,0.5); letter-spacing: 2px; }
+        .story-desc { font-size: 1.2rem; line-height: 1.8; text-shadow: 0 1px 5px rgba(0,0,0,0.5); font-weight: 300; }
+
+        /* 手機版優化：取消背景固定，避免效能問題 */
+        @media (max-width: 768px) {
+            .story-section { background-attachment: scroll; }
+            .story-title { font-size: 2rem; }
+        }
+
+        /* ========================================== */
+        /* ✨ [商品列表區] 設定 ✨ */
+        /* ========================================== */
+        #product-section {
+            /* 讓商品區開頭也成為一個斷點，並預留 Header 空間 */
+            scroll-snap-align: start;
+            scroll-margin-top: 80px; 
+        }
+
+        /* 商品網格與卡片樣式 */
+        .container { max-width: 1200px; margin: 3rem auto; padding: 0 1rem; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; }
+        .product-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.08); transition: transform 0.3s, box-shadow 0.3s; display: flex; flex-direction: column; position: relative; border: 1px solid #eee; cursor: pointer; }
+        .product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.12); }
+        .card-image-box { width: 100%; aspect-ratio: 1 / 1; position: relative; overflow: hidden; background-color: #ffffff; }
+        .card-img { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; opacity: 0; transition: opacity 0.5s ease-in-out; pointer-events: none; }
+        .card-img.active { opacity: 1; z-index: 2; }
+        .product-info { padding: 1.2rem; flex-grow: 1; display: flex; flex-direction: column; background: white; z-index: 2; }
+        .product-info h3 { margin-bottom: 0.5rem; font-size: 1.1rem; }
+        .product-info p { color: #666; margin-bottom: 1rem; font-size: 1rem; }
+        .btn-buy { background: rgb(2, 80, 119); color: white; border: none; padding: 0.6rem 1rem; border-radius: 6px; cursor: pointer; text-align: center; margin-top: auto; font-size: 0.95rem; transition: background 0.2s; }
+        .btn-buy:hover { background: var(--accent); }
+        .cart-count { background: #e74c3c; color: white; border-radius: 50%; padding: 2px 8px; font-size: 0.8rem; margin-left: 5px; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1><a href="MOindex.html">MOMO HAIRSTYLE</a></h1>
+        <nav>
+            <ul>
+                <li class="dropdown">
+                    <a href="MOindex.html?cat=all" style="padding-bottom: 30px; margin-bottom: -30px; display: inline-block;">所有商品 ▾</a>
+                    <div class="dropdown-content">
+                        <a href="MOindex.html?cat=洗髮">洗髮</a>
+                        <a href="MOindex.html?cat=染髮">染髮</a>
+                        <a href="MOindex.html?cat=燙髮">燙髮</a>
+                        <a href="MOindex.html?cat=保養">保養</a>
+                        <a href="MOindex.html?cat=煥采">煥采</a>
+                        <a href="MOindex.html?cat=活萃">活淬</a>
+                        <a href="MOindex.html?cat=R.O.8">R.O.8</a>
+                        <a href="MOindex.html?cat=S.I.G">S.I.G</a>
+                        <a href="MOindex.html?cat=日本">日本</a>
+                        <a href="MOindex.html?cat=韓國">韓國</a>
+                        <a href="MOindex.html?cat=其他">其他</a>
+                    </div>
+                </li>
+                <li><a href="MOabout.html">關於我們</a></li>
+                <li><a href="MOcart.html">🛒 購物車 <span id="cart-count" class="cart-count">0</span></a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div id="home-banner">
+        
+        <div class="story-section video-section" style="background-image: url('http://127.0.0.1:5001/uploads/shop.db.jpeg');">
+            
+            <video class="bg-video" muted loop playsinline autoplay>
+                <source src="http://127.0.0.1:5001/uploads/slide1.mp4" type="video/mp4">
+            </video>
+        
+            <div class="overlay"></div> 
+            <div class="story-content visible">
+                <h2 class="story-title">WELCOME TO MOMOHAIRSTYLE</h2>
+                <p class="story-desc">髦髦<br>感受最真實的沙龍體驗</p>
+            </div>
+        </div>
+
+        <div class="story-section" style="background-image: url('http://127.0.0.1:5001/uploads/2026.jpg');">
+            <div class="overlay"></div>
+            <div class="story-content">
+                <h2 class="story-title">Happy New Year</h2>
+                <p class="story-desc">過年限定優惠組合<br>給自己一份最溫暖的禮物</p>
+            </div>
+        </div>
+
+        <div class="story-section" style="background-image: url('http://127.0.0.1:5001/uploads/aqua.jpg');">
+            <div class="overlay"></div>
+            <div class="story-content">
+                <h2 class="story-title">日本頂級碳酸泉</h2>
+                <p class="story-desc">深層清潔，喚醒頭皮的呼吸<br>體驗前所未有的清爽與蓬鬆</p>
+            </div>
+        </div>
+
+        <div class="story-section" style="background-image: url('http://127.0.0.1:5001/uploads/MOMOHAIRSTYLEbanner.png');">
+            <div class="overlay"></div>
+            <div class="story-content">
+                <h2 class="story-title">Professional Care</h2>
+                <p class="story-desc">嚴選頂級沙龍專用產品<br>讓居家護理也能擁有沙龍級質感</p>
+            </div>
+        </div>
+        
+        <div class="story-section" style="background-image: url('http://127.0.0.1:5001/uploads/Gemini_Generated_Image_pmzt47pmzt47pmzt.png');">
+            <div class="overlay"></div>
+            <div class="story-content">
+                <h2 class="story-title">More Styles</h2>
+                <p class="story-desc">探索更多造型<br>發現不一樣的自己</p>
+            </div>
+        </div>
+
+    </div>
+
+    <main id="product-section" class="container" style="display: none;">    
+        <h2 id="page-title" style="text-align: center; margin-bottom: 2rem;">所有商品</h2>
+        <div id="product-grid" class="product-grid"></div>
+    </main>
+
+    <script>
+        window.products = [];
+
+        function updateCartCount() {
+            const cart = JSON.parse(localStorage.getItem('momoCart')) || [];
+            const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+            document.getElementById('cart-count').innerText = count;
+        }
+
+        // ==========================================
+        // ✨ [滾動偵測] 文字浮現 & 影片播放控制 ✨
+        // ==========================================
+        function initScrollAnimation() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    const video = entry.target.querySelector('video');
+
+                    if (entry.isIntersecting) {
+                        // 1. 文字動畫：加上 .visible 類別讓文字浮上來
+                        const content = entry.target.querySelector('.story-content');
+                        if (content) content.classList.add('visible');
+
+                        // 2. 影片控制：滑到才播放 (節省效能)
+                        if (video) {
+                            video.play().catch(e => console.log("自動播放需使用者互動"));
+                        }
+                    } else {
+                        // 3. 影片控制：滑走就暫停
+                        if (video) video.pause();
+                    }
+                });
+            }, { threshold: 0.3 }); // 30% 進入畫面時觸發
+
+            document.querySelectorAll('.story-section').forEach(section => {
+                observer.observe(section);
+            });
+        }
+
+        async function fetchProducts() {
+            try {
+                const response = await fetch('http://127.0.0.1:5001/api/products');
+                if (!response.ok) throw new Error('連線失敗');
+                window.products = await response.json();
+                render();
+            } catch (error) {
+                console.error(error);
+                if (document.getElementById('product-section').style.display !== 'none') {
+                    document.getElementById('product-grid').innerHTML = '<p style="text-align:center;">無法連線到伺服器 (Port 5001)</p>';
+                }
+            }
+        }
+
+        function render() {
+            const params = new URLSearchParams(window.location.search);
+            const category = params.get('cat');
+            
+            const bannerSection = document.getElementById('home-banner');
+            const productSection = document.getElementById('product-section');
+            const container = document.getElementById('product-grid');
+
+            // [自定義排序] 分類順序表
+            const categoryOrder = [
+                "洗髮", "染髮", "燙髮", "保養", "煥采", 
+                "活萃", "R.O.8", "S.I.G", "日本", "韓國", "其他"
+            ];
+
+            if (category) {
+                // ==========================================
+                // ✨ 模式 A：商品列表模式 (關閉捲動捕捉) ✨
+                // ==========================================
+                // 關鍵：移除 snap-active，恢復一般網頁的自由滾動，解決回彈問題
+                document.documentElement.classList.remove('snap-active'); 
+                
+                bannerSection.style.display = 'none'; 
+                productSection.style.display = 'block'; 
+                
+                let displayList = [];
+
+                if (category === 'all') {
+                    // ✨ 情況：點擊「所有商品」 -> 顯示全部並排序 ✨
+                    document.getElementById('page-title').innerText = "所有商品";
+                    displayList = [...window.products];
+                    
+                    // 執行排序邏輯
+                    displayList.sort((a, b) => {
+                        const getOrderIndex = (product) => {
+                            const cats = Array.isArray(product.category) ? product.category : [product.category];
+                            let minIndex = 999;
+                            cats.forEach(c => {
+                                const idx = categoryOrder.indexOf(c);
+                                if (idx !== -1 && idx < minIndex) minIndex = idx;
+                            });
+                            return minIndex;
+                        };
+                        return getOrderIndex(a) - getOrderIndex(b);
+                    });
+                } else {
+                    // ✨ 情況：點擊特定分類 -> 只過濾該分類 ✨
+                    document.getElementById('page-title').innerText = `${category} 系列`;
+                    displayList = window.products.filter(p => {
+                        if (Array.isArray(p.category)) return p.category.includes(category);
+                        return p.category === category;
+                    });
+                }
+
+                if (displayList.length === 0) {
+                    container.innerHTML = '<p style="grid-column: 1/-1; text-align:center;">此分類尚無商品</p>';
+                    return;
+                }
+
+                let html = '';
+                displayList.forEach(p => {
+                    let imageList = (p.images && p.images.length > 0) ? p.images : [p.image];
+                    let posList = (p.image_positions && p.image_positions.length > 0) ? p.image_positions : Array(imageList.length).fill('center center');
+
+                    let imgHtml = '';
+                    imageList.forEach((src, index) => {
+                const activeClass = (index === 0) ? 'active' : '';
+                const positionStyle = `object-position: ${posList[index] || 'center center'};`;
+                
+                // ✨ 新增：第一張圖立即載入，其他圖設定為 lazy (延遲載入) ✨
+                // 這樣可以大幅減少一開始的網路塞車
+                const loadingAttr = (index === 0) ? '' : 'loading="lazy"';
+
+                imgHtml += `<img src="${src}" alt="${p.name}" ${loadingAttr} class="card-img ${activeClass}" style="${positionStyle}" onerror="this.src='https://placehold.co/400x400?text=No+Image'">`;
+            });
+
+                    html += `
+                        <div class="product-card" onclick="window.location.href='MOproduct.html?id=${p.id}'">
+                            <div class="card-image-box">${imgHtml}</div>
+                            <div class="product-info">
+                                <h3>${p.name}</h3>
+                                <p style="font-size: 0.9rem;">點擊查看詳情</p>
+                                <span class="btn-buy">瞭解更多</span>
+                            </div>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+                setTimeout(setupHoverSlideshow, 100);
+
+            } else {
+                // ==========================================
+                // ✨ 模式 B：首頁形象模式 (開啟捲動捕捉) ✨
+                // ==========================================
+                // 關鍵：加入 snap-active，啟動強制分頁效果
+                document.documentElement.classList.add('snap-active'); 
+                
+                bannerSection.style.display = 'block'; 
+                productSection.style.display = 'none'; 
+                
+                initScrollAnimation();
+            }
+            
+            updateCartCount();
+        }
+
+        // 商品圖片輪播效果 (滑鼠懸停時)
+        function setupHoverSlideshow() {
+            const cards = document.querySelectorAll('.product-card');
+            cards.forEach(card => {
+                const imageBox = card.querySelector('.card-image-box');
+                if (!imageBox) return;
+                const images = imageBox.querySelectorAll('img');
+                
+                images.forEach((img, idx) => {
+                    if (idx === 0) img.classList.add('active');
+                    else img.classList.remove('active');
+                });
+
+                card.hoverInterval = null;
+
+                if (images.length > 1) {
+                    card.addEventListener('mouseenter', () => {
+                        if (card.hoverInterval) return;
+                        card.hoverInterval = setInterval(() => {
+                            let activeIndex = -1;
+                            images.forEach((img, idx) => { if (img.classList.contains('active')) activeIndex = idx; });
+                            if (activeIndex === -1) activeIndex = 0;
+                            images[activeIndex].classList.remove('active');
+                            let nextIndex = (activeIndex + 1) % images.length;
+                            images[nextIndex].classList.add('active');
+                        }, 1500); 
+                    });
+                    card.addEventListener('mouseleave', () => {
+                        if (card.hoverInterval) { clearInterval(card.hoverInterval); card.hoverInterval = null; }
+                        images.forEach(img => img.classList.remove('active'));
+                        if (images[0]) images[0].classList.add('active');
+                    });
+                }
+            });
+        }
+
+        window.onload = function() {
+            fetchProducts();
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <title>關於我們 - MOMO HAIRSTYLE</title>
+    <style>
+        /* 變數設定 */
+        :root { 
+            --primary: #000; 
+            --bg: #f4f4f4; 
+            --header-bg: #0250c7; /* 確保與其他頁面統一 */
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans TC', sans-serif; }
+        body { background: var(--bg); color: var(--primary); }
+        a { text-decoration: none; color: white; }
+
+        /* Header 樣式 (統一) */
+        header { 
+            background: var(--header-bg); 
+            color: white; 
+            padding: 0 2rem; 
+            height: 80px; 
+            display: flex; 
+            justify-content: flex-end; /* 改為靠右，讓 Nav 在右邊 */
+            align-items: center; 
+            position: sticky; 
+            top: 0; 
+            z-index: 100; 
+            position: relative; /* 確保絕對定位參考此處 */
+        }
+        
+        /* 標題置中設定 */
+        /* 統一 Header 標題樣式 (參照 MOindex.html) */
+        header h1 {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            margin: 0;
+            font-size: 1.5rem; /* 統一大小 */
+            white-space: nowrap; /* 防止手機版換行 */
+            font-weight: bold; /* 確保粗細一致 */
+        }
+        /* 內容容器樣式 */
+        .container { max-width: 800px; margin: 3rem auto; padding: 2rem; background: white; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .about-img { width: 100%; height: 300px; object-fit: cover; border-radius: 8px; margin-bottom: 2rem; }
+        p { line-height: 2; color: #555; margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1><a href="MOindex.html">MOMO HAIRSTYLE</a></h1>
+        <nav><a href="MOindex.html">← 回首頁</a></nav>
+    </header>
+
+    <main class="container">
+        <h2 style="text-align: center; margin-bottom: 1rem;">關於我們</h2>
+        <img src="mo.png" class="about-img" onerror="this.style.display='none'">
+        
+        <p><strong>歡迎來到 髦髦 MOMO HAIRSTYLE！</strong></p>
+        <p>我們致力於為每一位顧客打造最適合的個人風格。無論是時尚剪髮、專業染燙，或是頂級頭皮護理，我們都堅持使用最高品質的產品。</p>
+        <p>📍 地址：台南市安平區永華六街154巷50號<br>
+           🕒 營業時間：週二至週日 10:00 - 20:00<br>
+           Instagram：@maomeishu<br>
+           LINE:0956526063<br>
+        </p>
+    </main>
+<script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "HairSalon",
+          "name": "MOMO HAIRSTYLE",
+          "image": "http://127.0.0.1:5001/uploads/mo.png",
+          "priceRange": "$$",
+          "telephone": "0956526063",
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "安平區永華六街154巷50號",
+            "addressLocality": "Tainan",
+            "addressRegion": "Tainan City",
+            "postalCode": "708",
+            "addressCountry": "TW"
+          },
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": 22.990000, 
+            "longitude": 120.180000 
+            /* 注意：建議去 Google Maps 查一下你店址精確的經緯度填入這裡 */
+          },
+          "openingHoursSpecification": {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": [
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday",
+              "Saturday",
+              "Sunday"
+            ],
+            "opens": "10:00",
+            "closes": "20:00"
+          },
+          "url": "https://www.yourwebsite.com/MOindex.html"
+        }
+        </script>
+</body>
+</html>
