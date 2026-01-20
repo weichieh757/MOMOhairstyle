@@ -7,21 +7,10 @@
     <title>MOMO 後台管理系統</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap"
         rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
     <style>
-        :root {
-            --primary: #000;
-            --accent: #2148d5;
-            --bg: #f4f4f4;
-        }
-
-        * {
-            box-sizing: border-box;
-            font-family: 'Noto Sans TC', sans-serif;
-        }
-
+        /* Admin specific overrides */
         body {
-            background: var(--bg);
-            color: var(--primary);
             padding: 2rem;
         }
 
@@ -50,15 +39,8 @@
             font-weight: bold;
         }
 
-        input[type="text"],
-        input[type="number"],
-        textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 1rem;
-        }
+        /* Inputs are handled in styles.css generally, but ensuring overrides here if needed */
+
 
         .checkbox-group {
             display: flex;

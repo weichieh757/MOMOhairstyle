@@ -20,356 +20,29 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap"
         rel="stylesheet">
 
-    <style>
-        :root {
-            --primary: #000;
-            --accent: #0250c7;
-            --bg: #f4f4f4;
-            --header-bg: #0250c7;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Noto Sans TC', sans-serif;
-        }
-
-        /* ========================================== */
-        /* ✨ [捲動捕捉] Scroll Snap 智慧切換 ✨ */
-        /* ========================================== */
-        html {
-            scroll-behavior: smooth;
-            /* 讓所有滾動都有平滑動畫 */
-        }
-
-        /* 只有當加上這個 class 時 (在首頁模式)，才會啟動「強制分頁」功能 */
-        html.snap-active {
-            scroll-snap-type: y mandatory;
-        }
-
-        body {
-            background: var(--bg);
-            color: var(--primary);
-            padding-bottom: 0;
-            overflow-x: hidden;
-        }
-
-        a {
-            text-decoration: none;
-            color: inherit;
-        }
-
-        /* Header 設定 (半透明磨砂玻璃效果) */
-        header {
-            background: #0250c7;
-            color: white;
-            padding: 0 2rem;
-            height: 80px;
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            backdrop-filter: blur(5px);
-        }
-
-        header h1 {
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            margin: 0;
-            font-size: 1.5rem;
-            white-space: nowrap;
-            font-weight: bold;
-        }
-
-        nav ul {
-            list-style: none;
-            display: flex;
-            gap: 20px;
-        }
-
-        nav a {
-            color: white;
-            font-weight: bold;
-            transition: color 0.3s;
-        }
-
-        nav a:hover {
-            color: #ccc;
-        }
-
-        /* Dropdown 下拉選單 */
-        .dropdown {
-            position: relative;
-            display: flex;
-            align-items: center;
-            height: 100%;
-        }
-
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            background: white;
-            min-width: 160px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-            border-radius: 0 0 4px 4px;
-            overflow: hidden;
-            z-index: 1001;
-        }
-
-        .dropdown:hover .dropdown-content {
-            display: block;
-        }
-
-        .dropdown-content a {
-            color: #333;
-            padding: 12px 16px;
-            text-align: center;
-            display: block;
-        }
-
-        .dropdown-content a:hover {
-            background: #f1f1f1;
-            color: var(--accent);
-        }
-
-        /* ========================================== */
-        /* ✨ [視差滾動] 每一頁的區塊設定 ✨ */
-        /* ========================================== */
-        .story-section {
-            position: relative;
-            width: 100%;
-            height: 100vh;
-            /* 佔滿整個螢幕高度 */
-
-            /* 背景固定不動，創造視差效果 */
-            background-attachment: fixed;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-size: cover;
-            /* 確保背景圖填滿 */
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-
-            /* [捲動捕捉] 設定這一塊為一個「捕捉點」 */
-            scroll-snap-align: start;
-            scroll-snap-stop: always;
-            /* 強制停在這裡，不能一次滑過 */
-        }
-
-        /* [影片背景] 專用設定 */
-        .video-section {
-            position: relative;
-            overflow: hidden;
-            /* 防止影片超出範圍 */
-            /* 背景圖已在 inline-style 設定，這裡確保它能正確填滿 */
-        }
-
-        /* [影片] 絕對定位，確保永遠填滿區塊且不變形 */
-        .bg-video {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            min-width: 100%;
-            min-height: 100%;
-            width: auto;
-            height: auto;
-            transform: translate(-50%, -50%);
-            /* 確保置中 */
-            object-fit: cover;
-            /* 關鍵：讓影片填滿畫面 */
-            z-index: 0;
-            /* 放在最底層 (背景圖之上) */
-        }
-
-        /* 遮罩層 (讓文字在複雜背景上看得清楚) */
-        .overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.3);
-            z-index: 1;
-            /* 比影片高一層 */
-        }
-
-        /* 文字內容區 (初始隱藏，透過 JS 觸發浮現動畫) */
-        .story-content {
-            position: relative;
-            z-index: 2;
-            /* 最上層 */
-            color: white;
-            max-width: 800px;
-            padding: 2rem;
-            opacity: 0;
-            transform: translateY(50px);
-            transition: all 1s ease-out;
-        }
-
-        /* 加上 .visible 後文字會浮現 */
-        .story-content.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .story-title {
-            font-size: 3rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-            letter-spacing: 2px;
-        }
-
-        .story-desc {
-            font-size: 1.2rem;
-            line-height: 1.8;
-            text-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
-            font-weight: 300;
-        }
-
-        /* 手機版優化：取消背景固定，避免效能問題 */
-        @media (max-width: 768px) {
-            .story-section {
-                background-attachment: scroll;
-            }
-
-            .story-title {
-                font-size: 2rem;
-            }
-        }
-
-        /* ========================================== */
-        /* ✨ [商品列表區] 設定 ✨ */
-        /* ========================================== */
-        #product-section {
-            /* 讓商品區開頭也成為一個斷點，並預留 Header 空間 */
-            scroll-snap-align: start;
-            scroll-margin-top: 80px;
-        }
-
-        /* 商品網格與卡片樣式 */
-        .container {
-            max-width: 1200px;
-            margin: 3rem auto;
-            padding: 0 1rem;
-        }
-
-        .product-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-        }
-
-        .product-card {
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-            transition: transform 0.3s, box-shadow 0.3s;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            border: 1px solid #eee;
-            cursor: pointer;
-        }
-
-        .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
-        }
-
-        .card-image-box {
-            width: 100%;
-            aspect-ratio: 1 / 1;
-            position: relative;
-            overflow: hidden;
-            background-color: #ffffff;
-        }
-
-        .card-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            position: absolute;
-            top: 0;
-            left: 0;
-            opacity: 0;
-            transition: opacity 0.5s ease-in-out;
-            pointer-events: none;
-        }
-
-        .card-img.active {
-            opacity: 1;
-            z-index: 2;
-        }
-
-        .product-info {
-            padding: 1.2rem;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            background: white;
-            z-index: 2;
-        }
-
-        .product-info h3 {
-            margin-bottom: 0.5rem;
-            font-size: 1.1rem;
-        }
-
-        .product-info p {
-            color: #666;
-            margin-bottom: 1rem;
-            font-size: 1rem;
-        }
-
-        .btn-buy {
-            background: rgb(2, 80, 119);
-            color: white;
-            border: none;
-            padding: 0.6rem 1rem;
-            border-radius: 6px;
-            cursor: pointer;
-            text-align: center;
-            margin-top: auto;
-            font-size: 0.95rem;
-            transition: background 0.2s;
-        }
-
-        .btn-buy:hover {
-            background: var(--accent);
-        }
-
-        .cart-count {
-            background: #e74c3c;
-            color: white;
-            border-radius: 50%;
-            padding: 2px 8px;
-            font-size: 0.8rem;
-            margin-left: 5px;
-        }
-    </style>
+    <link rel="stylesheet" href="css/styles.css">
+    <!-- Inline style block removed in favor of css/styles.css -->
 </head>
 
 <body>
     <header>
+        <!-- Logo (原本是置中，手機版改左邊) -->
         <h1><a href="MOindex.html">MOMO HAIRSTYLE</a></h1>
+
+        <!-- 漢堡按鈕 -->
+        <div class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
         <nav>
-            <ul>
+            <ul class="mobile-menu">
                 <li class="dropdown">
                     <a href="MOindex.html?cat=all"
                         style="padding-bottom: 30px; margin-bottom: -30px; display: inline-block;">所有商品 ▾</a>
                     <div class="dropdown-content">
+                        <a href="MOindex.html">所有商品</a>
                         <a href="MOindex.html?cat=洗髮">洗髮</a>
                         <a href="MOindex.html?cat=染髮">染髮</a>
                         <a href="MOindex.html?cat=燙髮">燙髮</a>
@@ -640,6 +313,26 @@
         window.onload = function () {
             fetchProducts();
         };
+        // ==========================================
+        // ✨ [漢堡選單] 手機版切換 ✨
+        // ==========================================
+        const hamburger = document.querySelector('.hamburger');
+        const navUl = document.querySelector('nav ul');
+
+        if (hamburger) {
+            hamburger.addEventListener('click', () => {
+                hamburger.classList.toggle('active');
+                navUl.classList.toggle('active');
+            });
+
+            // 點擊連結後自動收起選單
+            document.querySelectorAll('nav a').forEach(link => {
+                link.addEventListener('click', () => {
+                    hamburger.classList.remove('active');
+                    navUl.classList.remove('active');
+                });
+            });
+        }
     </script>
 </body>
 
