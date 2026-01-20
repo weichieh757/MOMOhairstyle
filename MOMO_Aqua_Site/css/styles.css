@@ -158,13 +158,21 @@ nav a:hover {
         display: flex;
     }
 
+    /* Fix: Remove nav from flex flow so H1 and Hamburger align to edges */
+    nav {
+        position: absolute;
+        width: 0;
+        height: 0;
+        overflow: visible;
+    }
+
     /* Only apply side menu style if it is a list (index page) */
     nav ul.mobile-menu {
         position: fixed;
         top: 0;
         right: -100%;
         width: 250px;
-        height: 100vh;
+        height: 100dvh;
         background: rgba(2, 80, 199, 0.95);
         flex-direction: column;
         justify-content: center;
