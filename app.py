@@ -19,6 +19,24 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row
     return conn
 
+# 初始化資料庫：確保 orders 資料表存在
+def init_db():
+    conn = get_db_connection()
+    conn.execute('''
+        CREATE TABLE IF NOT EXISTS orders (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            customer_name TEXT NOT NULL,
+            order_data TEXT NOT NULL,
+            total_amount INTEGER NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+    conn.commit()
+    conn.close()
+
+# 啟動時初始化資料庫
+init_db()
+
 # --- 頁面路由 ---
 @app.route('/')
 def home():
@@ -148,10 +166,48 @@ def delete_product(id):
 @app.route('/api/checkout', methods=['POST'])
 def checkout():
     data = request.json
-    print("收到訂單：", data)
-    return jsonify({'status': 'success', 'message': 'Order received'})
+    customer_name = data.get('customerName', '未提供姓名')
+    cart = data.get('cart', [])
+    
+    # 計算總金額
+    total_amount = sum(item.get('price', 0) * item.get('quantity', 1) for item in cart)
+    
+    # 將購物車轉為 JSON 字串儲存
+    order_data_json = json.dumps(cart, ensure_ascii=False)
+    
+    # 存入資料庫
+    conn = get_db_connection()
+    cursor = conn.execute('''
+        INSERT INTO orders (customer_name, order_data, total_amount)
+        VALUES (?, ?, ?)
+    ''', (customer_name, order_data_json, total_amount))
+    order_id = cursor.lastrowid
+    conn.commit()
+    conn.close()
+    
+    print(f"✅ 新訂單 #{order_id}：{customer_name}，總金額 NT${total_amount}")
+    return jsonify({'status': 'success', 'message': 'Order received', 'order_id': order_id})
 
-# --- 6. 圖片庫 API ---
+# --- 6. 取得所有訂單 (Admin) ---
+@app.route('/api/orders', methods=['GET'])
+def get_orders():
+    conn = get_db_connection()
+    orders = conn.execute('SELECT * FROM orders ORDER BY created_at DESC').fetchall()
+    conn.close()
+    
+    orders_list = []
+    for o in orders:
+        o_dict = dict(o)
+        # 把 JSON 字串轉回 Python 列表
+        try:
+            o_dict['order_data'] = json.loads(o['order_data']) if o['order_data'] else []
+        except:
+            o_dict['order_data'] = []
+        orders_list.append(o_dict)
+    
+    return jsonify(orders_list)
+
+# --- 7. 圖片庫 API ---
 @app.route('/api/images', methods=['GET'])
 def get_images():
     images = []

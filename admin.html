@@ -415,6 +415,11 @@
 
         <h2>已上架商品列表</h2>
         <div id="productList" class="product-list"></div>
+
+        <hr style="margin: 3rem 0;">
+
+        <h2>📦 訂單列表</h2>
+        <div id="orderList" class="product-list">載入中...</div>
     </div>
 
     <div id="galleryModal" class="modal">
@@ -725,7 +730,49 @@
             catch (err) { alert('刪除失敗'); }
         }
 
+        // ✨ 訂單列表功能 ✨
+        async function loadOrders() {
+            const orderList = document.getElementById('orderList');
+            try {
+                const res = await fetch('/api/orders');
+                const orders = await res.json();
+
+                if (orders.length === 0) {
+                    orderList.innerHTML = '<p style="color: #999; text-align: center; padding: 2rem;">目前沒有訂單</p>';
+                    return;
+                }
+
+                orderList.innerHTML = '';
+                orders.forEach(order => {
+                    // 解析訂單商品
+                    let itemsHtml = '';
+                    if (order.order_data && order.order_data.length > 0) {
+                        itemsHtml = order.order_data.map(item =>
+                            `${item.name} ${item.variant ? '(' + item.variant + ')' : ''} x${item.quantity}`
+                        ).join('<br>');
+                    }
+
+                    orderList.innerHTML += `
+                        <div class="product-item" style="flex-wrap: wrap;">
+                            <div style="flex-grow: 1;">
+                                <strong style="color: var(--accent);">訂單 #${order.id}</strong> - ${order.customer_name}<br>
+                                <span style="color: #666; font-size: 0.9rem;">${itemsHtml}</span>
+                            </div>
+                            <div style="text-align: right; min-width: 150px;">
+                                <strong style="color: #27ae60;">NT$ ${order.total_amount.toLocaleString()}</strong><br>
+                                <span style="font-size: 0.8rem; color: #999;">${order.created_at}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+            } catch (e) {
+                console.error("載入訂單失敗", e);
+                orderList.innerHTML = '<p style="color: red;">載入訂單失敗</p>';
+            }
+        }
+
         loadProducts();
+        loadOrders();
     </script>
 </body>
 
